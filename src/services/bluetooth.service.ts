@@ -1,6 +1,23 @@
 class BluetoothService {
     private device: BluetoothDevice | null = null
     private server: BluetoothRemoteGATTServer | null = null
+    private disconnectCallback: (() => void) | null = null
+
+    // Reuse encoder/decoder for performance
+    private static encoder = new TextEncoder()
+    private static decoder = new TextDecoder()
+
+    private handleDisconnection = () => {
+        if (this.disconnectCallback) {
+            this.disconnectCallback()
+        }
+        this.device = null
+        this.server = null
+    }
+
+    setDisconnectCallback(callback: () => void) {
+        this.disconnectCallback = callback
+    }
 
     async requestDevice() {
         try {
@@ -14,6 +31,9 @@ class BluetoothService {
                 })
 
             this.device = device
+            // Remove existing listener if any
+            this.device.removeEventListener('gattserverdisconnected', this.handleDisconnection)
+            this.device.addEventListener('gattserverdisconnected', this.handleDisconnection)
 
             return device
         } catch (error) {
@@ -37,6 +57,7 @@ class BluetoothService {
         if (this.device?.gatt?.connected) {
             this.device.gatt.disconnect()
         }
+        // The event listener will handle the rest
     }
 
     async getServices() {
@@ -60,10 +81,8 @@ class BluetoothService {
             const value =
                 await characteristic.readValue()
 
-            const decoder = new TextDecoder()
-
             try {
-                return decoder.decode(value)
+                return BluetoothService.decoder.decode(value)
             } catch {
                 return Array.from(
                     new Uint8Array(value.buffer)
@@ -71,7 +90,6 @@ class BluetoothService {
             }
         } catch (error) {
             console.error(error)
-
             return 'Unable to read'
         }
     }
@@ -81,10 +99,14 @@ class BluetoothService {
         data: string
     ) {
         try {
-            const encoder = new TextEncoder()
+            // Guard check for writability
+            if (!characteristic.properties.write && !characteristic.properties.writeWithoutResponse) {
+                console.error('Characteristic is not writable')
+                return false
+            }
 
             const encodedData =
-                encoder.encode(data)
+                BluetoothService.encoder.encode(data)
 
             await characteristic.writeValue(
                 encodedData
@@ -93,10 +115,9 @@ class BluetoothService {
             return true
         } catch (error) {
             console.error(error)
-
             return false
         }
     }
 }
 
-export default new BluetoothService()
+export default new BluetoothService()
