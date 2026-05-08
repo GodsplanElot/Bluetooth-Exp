@@ -4,9 +4,11 @@ export interface DeviceData {
     connected: boolean
 }
 
+
 export interface BluetoothCharacteristicData {
     uuid: string
     properties: BluetoothCharacteristicProperties
+    value?: string
 }
 
 export interface BluetoothServiceData {

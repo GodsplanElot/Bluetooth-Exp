@@ -42,14 +42,29 @@ export const useBluetooth = () => {
                     service
                 )
 
+            const formattedCharacteristics = []
+
+            for (const char of characteristics) {
+                let value = 'N/A'
+
+                if (char.properties.read) {
+                    value =
+                        await bluetoothService.readCharacteristic(
+                            char
+                        )
+                }
+
+                formattedCharacteristics.push({
+                    uuid: char.uuid,
+                    properties: char.properties,
+                    value,
+                })
+            }
+
             formattedServices.push({
                 uuid: service.uuid,
-                characteristics: characteristics.map(
-                    char => ({
-                        uuid: char.uuid,
-                        properties: char.properties,
-                    })
-                ),
+                characteristics:
+                    formattedCharacteristics,
             })
         }
 

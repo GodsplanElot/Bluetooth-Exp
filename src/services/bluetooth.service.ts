@@ -60,10 +60,19 @@ class BluetoothService {
             const value =
                 await characteristic.readValue()
 
-            return value
+            const decoder = new TextDecoder()
+
+            try {
+                return decoder.decode(value)
+            } catch {
+                return Array.from(
+                    new Uint8Array(value.buffer)
+                ).join(', ')
+            }
         } catch (error) {
             console.error(error)
-            return null
+
+            return 'Unable to read'
         }
     }
 }
