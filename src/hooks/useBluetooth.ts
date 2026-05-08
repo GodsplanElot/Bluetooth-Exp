@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import bluetoothService from '../services/bluetooth.service'
-import {
+import type {
     BluetoothServiceData,
 } from '../types/bluetooth.types'
 
