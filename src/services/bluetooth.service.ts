@@ -75,6 +75,28 @@ class BluetoothService {
             return 'Unable to read'
         }
     }
+
+    async writeCharacteristic(
+        characteristic: BluetoothRemoteGATTCharacteristic,
+        data: string
+    ) {
+        try {
+            const encoder = new TextEncoder()
+
+            const encodedData =
+                encoder.encode(data)
+
+            await characteristic.writeValue(
+                encodedData
+            )
+
+            return true
+        } catch (error) {
+            console.error(error)
+
+            return false
+        }
+    }
 }
 
 export default new BluetoothService()
