@@ -3,3 +3,13 @@ export interface DeviceData {
     name: string
     connected: boolean
 }
+
+export interface BluetoothCharacteristicData {
+    uuid: string
+    properties: BluetoothCharacteristicProperties
+}
+
+export interface BluetoothServiceData {
+    uuid: string
+    characteristics: BluetoothCharacteristicData[]
+}
