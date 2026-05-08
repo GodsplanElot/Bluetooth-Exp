@@ -1,11 +1,8 @@
+import Dashboard from "./pages/Dashboard"
+
+
 function App() {
-  return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center">
-      <h1 className="text-4xl font-bold">
-        Bluetooth Dashboard
-      </h1>
-    </div>
-  )
+  return <Dashboard />
 }
 
 export default App
