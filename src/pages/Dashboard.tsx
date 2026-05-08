@@ -12,6 +12,7 @@ const Dashboard = () => {
         loading,
         services,
         logs,
+        writeToCharacteristic,
         connect,
         disconnect,
     } = useBluetooth()
@@ -41,7 +42,10 @@ const Dashboard = () => {
                 )}
 
                 {services.length > 0 && (
-                    <ServicesList services={services} />
+                    <ServicesList
+                        services={services}
+                        onWrite={writeToCharacteristic}
+                    />
                 )}
 
                 <ConsoleLogs logs={logs} />
