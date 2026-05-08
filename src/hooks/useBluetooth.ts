@@ -61,10 +61,11 @@ export const useBluetooth = () => {
                 })
             }
 
-            formattedServices.push({
-                uuid: service.uuid,
-                characteristics:
-                    formattedCharacteristics,
+            formattedCharacteristics.push({
+                uuid: char.uuid,
+                properties: char.properties,
+                value,
+                characteristic: char,
             })
         }
 
@@ -116,6 +117,28 @@ export const useBluetooth = () => {
         addLog('Device disconnected')
     }
 
+    const writeToCharacteristic = async (
+        characteristic:
+            BluetoothRemoteGATTCharacteristic,
+        data: string
+    ) => {
+        const success =
+            await bluetoothService.writeCharacteristic(
+                characteristic,
+                data
+            )
+
+        if (success) {
+            addLog(
+                `Sent data: "${data}"`
+            )
+        } else {
+            addLog(
+                `Failed to send data`
+            )
+        }
+    }
+
     return {
         device,
         connected,
@@ -124,5 +147,6 @@ export const useBluetooth = () => {
         logs,
         connect,
         disconnect,
+        writeToCharacteristic
     }
 }
