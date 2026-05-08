@@ -2,6 +2,7 @@ import type {
     BluetoothServiceData,
 } from '../types/bluetooth.types'
 import WriteControls from './WriteControls'
+import { Layers, Activity, Database, Copy } from 'lucide-react'
 
 interface Props {
     services: BluetoothServiceData[]
@@ -17,95 +18,96 @@ const ServicesList = ({
     services,
     onWrite,
 }: Props) => {
+    const copyToClipboard = (text: string) => {
+        navigator.clipboard.writeText(text);
+        // Could add a toast here
+    };
+
     return (
-        <div className="mt-6">
-            <h2 className="text-2xl font-bold mb-4">
-                Services & Characteristics
-            </h2>
+        <div className="space-y-6">
+            <div className="flex items-center gap-2 px-2">
+                <Layers className="w-5 h-5 text-brand-primary" />
+                <h2 className="text-2xl font-bold tracking-tight">Services & Characteristics</h2>
+            </div>
 
             <div className="space-y-4">
-                {services.map((service, index) => (
+                {services.map((service) => (
                     <div
-                        key={index}
-                        className="
-              border
-              border-zinc-800
-              rounded-xl
-              p-5
-              bg-zinc-900
-            "
+                        key={service.uuid}
+                        className="premium-card p-0 overflow-hidden"
                     >
-                        <h3 className="font-semibold text-blue-400 break-all">
-                            Service UUID:
-                        </h3>
+                        {/* Service Header */}
+                        <div className="p-5 border-b border-glass-border bg-surface-base/30 flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 rounded-lg bg-brand-primary/10 text-brand-primary">
+                                    <Database className="w-5 h-5" />
+                                </div>
+                                <div>
+                                    <p className="text-xs font-bold text-text-secondary uppercase tracking-widest">Service</p>
+                                    <p className="font-mono text-sm break-all">{service.uuid}</p>
+                                </div>
+                            </div>
+                            <button 
+                                onClick={() => copyToClipboard(service.uuid)}
+                                className="p-2 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 text-text-secondary transition-colors"
+                                title="Copy UUID"
+                            >
+                                <Copy className="w-4 h-4" />
+                            </button>
+                        </div>
 
-                        <p className="mb-4 break-all">
-                            {service.uuid}
-                        </p>
-
-                        <div className="space-y-3">
-                            {service.characteristics.map(
-                                (char, idx) => (
-                                    <div
-                                        key={idx}
-                                        className="
-                      bg-zinc-800
-                      p-3
-                      rounded-lg
-                    "
-                                    >
-                                        <p className="break-all">
-                                            <span className="font-semibold">
-                                                Characteristic:
-                                            </span>{' '}
-                                            {char.uuid}
-                                        </p>
-
-                                        <p className="mt-2 text-sm text-green-400 break-all">
-                                            <span className="font-semibold">
-                                                Value:
-                                            </span>{' '}
-                                            {char.value || 'N/A'}
-                                        </p>
-
-                                        <p className="text-sm text-zinc-400 mt-2">
-                                            Properties:
-                                        </p>
-
-                                        <div className="flex gap-2 flex-wrap mt-2">
-                                            {Object.entries(
-                                                char.properties
-                                            ).map(
-                                                ([key, value]) =>
-                                                    value && (
-                                                        <span
-                                                            key={key}
-                                                            className="
-                                bg-blue-600
-                                px-2
-                                py-1
-                                rounded-md
-                                text-xs
-                              "
-                                                        >
-                                                            {key}
-                                                        </span>
-                                                    )
-
-                                            )}
-                                            {char.properties.write &&
-                                                char.characteristic && (
-                                                    <WriteControls
-                                                        characteristic={
-                                                            char.characteristic
-                                                        }
-                                                        onSend={onWrite}
-                                                    />
-                                                )}
+                        {/* Characteristics List */}
+                        <div className="p-5 space-y-4">
+                            {service.characteristics.map((char) => (
+                                <div
+                                    key={char.uuid}
+                                    className="p-4 rounded-xl bg-surface-base/50 border border-glass-border hover:border-brand-primary/30 transition-colors duration-300"
+                                >
+                                    <div className="flex items-start justify-between mb-3">
+                                        <div className="flex items-center gap-2">
+                                            <Activity className="w-4 h-4 text-brand-primary" />
+                                            <span className="text-sm font-bold">Characteristic</span>
                                         </div>
+                                        <button 
+                                            onClick={() => copyToClipboard(char.uuid)}
+                                            className="p-1 rounded-md hover:bg-black/5 dark:hover:bg-white/5 text-text-secondary transition-colors"
+                                        >
+                                            <Copy className="w-3 h-3" />
+                                        </button>
                                     </div>
-                                )
-                            )}
+                                    
+                                    <p className="font-mono text-xs mb-4 break-all text-text-secondary">{char.uuid}</p>
+
+                                    <div className="flex flex-wrap gap-2 mb-4">
+                                        {Object.entries(char.properties).map(([key, value]) => (
+                                            value && (
+                                                <span
+                                                    key={key}
+                                                    className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-tighter bg-brand-primary/10 text-brand-primary border border-brand-primary/20"
+                                                >
+                                                    {key}
+                                                </span>
+                                            )
+                                        ))}
+                                    </div>
+
+                                    <div className="flex flex-col gap-3">
+                                        <div className="p-3 rounded-lg bg-surface-elevated border border-glass-border shadow-inner">
+                                            <p className="text-[10px] font-bold text-text-secondary uppercase tracking-widest mb-1">Value (Decoded)</p>
+                                            <p className="font-mono text-sm break-all text-green-500 font-medium">
+                                                {char.value || 'N/A'}
+                                            </p>
+                                        </div>
+
+                                        {char.properties.write && char.characteristic && (
+                                            <WriteControls
+                                                characteristic={char.characteristic}
+                                                onSend={onWrite}
+                                            />
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </div>
                 ))}
