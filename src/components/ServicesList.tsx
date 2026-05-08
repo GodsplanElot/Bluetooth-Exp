@@ -1,13 +1,21 @@
 import type {
     BluetoothServiceData,
 } from '../types/bluetooth.types'
+import WriteControls from './WriteControls'
 
 interface Props {
     services: BluetoothServiceData[]
+
+    onWrite: (
+        characteristic:
+            BluetoothRemoteGATTCharacteristic,
+        data: string
+    ) => void
 }
 
 const ServicesList = ({
     services,
+    onWrite,
 }: Props) => {
     return (
         <div className="mt-6">
@@ -83,7 +91,17 @@ const ServicesList = ({
                                                             {key}
                                                         </span>
                                                     )
+
                                             )}
+                                            {char.properties.write &&
+                                                char.characteristic && (
+                                                    <WriteControls
+                                                        characteristic={
+                                                            char.characteristic
+                                                        }
+                                                        onSend={onWrite}
+                                                    />
+                                                )}
                                         </div>
                                     </div>
                                 )
