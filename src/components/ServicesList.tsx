@@ -53,6 +53,13 @@ const ServicesList = ({
                                             {char.uuid}
                                         </p>
 
+                                        <p className="mt-2 text-sm text-green-400 break-all">
+                                            <span className="font-semibold">
+                                                Value:
+                                            </span>{' '}
+                                            {char.value || 'N/A'}
+                                        </p>
+
                                         <p className="text-sm text-zinc-400 mt-2">
                                             Properties:
                                         </p>
