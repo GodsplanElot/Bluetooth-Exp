@@ -4,19 +4,20 @@ class BluetoothService {
 
     async requestDevice() {
         try {
-            const device = await navigator.bluetooth.requestDevice({
-                acceptAllDevices: true,
-                optionalServices: [
-                    'battery_service',
-                    'device_information',
-                ],
-            })
+            const device =
+                await navigator.bluetooth.requestDevice({
+                    acceptAllDevices: true,
+                    optionalServices: [
+                        'battery_service',
+                        'device_information',
+                    ],
+                })
 
             this.device = device
 
             return device
         } catch (error) {
-            console.error('Error requesting device:', error)
+            console.error(error)
             throw error
         }
     }
@@ -26,32 +27,44 @@ class BluetoothService {
             throw new Error('No device selected')
         }
 
-        try {
-            this.server = await this.device.gatt?.connect() || null
+        this.server =
+            await this.device.gatt?.connect() || null
 
-            return this.server
-        } catch (error) {
-            console.error('Connection failed:', error)
-            throw error
-        }
+        return this.server
     }
 
-    async disconnectDevice() {
+    disconnectDevice() {
         if (this.device?.gatt?.connected) {
             this.device.gatt.disconnect()
         }
     }
 
-    async getPrimaryServices() {
+    async getServices() {
         if (!this.server) {
-            throw new Error('No GATT server connected')
+            throw new Error('No connected server')
         }
 
         return await this.server.getPrimaryServices()
     }
 
-    async getCharacteristics(service: BluetoothRemoteGATTService) {
+    async getCharacteristics(
+        service: BluetoothRemoteGATTService
+    ) {
         return await service.getCharacteristics()
+    }
+
+    async readCharacteristic(
+        characteristic: BluetoothRemoteGATTCharacteristic
+    ) {
+        try {
+            const value =
+                await characteristic.readValue()
+
+            return value
+        } catch (error) {
+            console.error(error)
+            return null
+        }
     }
 }
 
