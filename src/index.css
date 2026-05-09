@@ -44,19 +44,19 @@ body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-.glass {
+@utility glass {
   background: var(--glass-bg);
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
   border: 1px solid var(--glass-border);
 }
 
-.premium-card {
+@utility premium-card {
   @apply glass rounded-2xl shadow-xl transition-all duration-300;
-}
-
-.premium-card:hover {
-  @apply shadow-2xl scale-[1.01];
+  
+  &:hover {
+    @apply shadow-2xl scale-[1.01];
+  }
 }
 
 @keyframes pulse-soft {
